@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -16,6 +16,31 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+    },
+  },
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
+    sourcemap: false,
+    minify: "terser",
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            "react",
+            "react-dom",
+            "react-router-dom",
+            "@tanstack/react-query",
+            "react-hot-toast",
+          ],
+        },
+      },
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [require("tailwindcss"), require("autoprefixer")],
     },
   },
 });
