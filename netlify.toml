@@ -1,10 +1,10 @@
 [build]
   base = "Frontend"
-  command = "cd Frontend && npm ci && npm run build"
-  publish = "Frontend/dist"
+  command = "npm ci && npm run build"
+  publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "16"
   NODE_ENV = "production"
   NPM_FLAGS = "--no-audit --no-fund"
 
