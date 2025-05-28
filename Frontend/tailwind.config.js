@@ -1,8 +1,7 @@
-import daisyui from "daisyui";
-import daisyUIThemes from "daisyui/src/theming/themes";
+const daisyui = require("daisyui");
 
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -17,7 +16,6 @@ export default {
     themes: [
       {
         black: {
-          ...daisyUIThemes["black"],
           primary: "rgb(29, 155, 240)",
           secondary: "rgb(24, 24, 24)",
           "base-100": "#000000",
