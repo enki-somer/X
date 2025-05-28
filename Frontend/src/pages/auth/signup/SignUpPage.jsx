@@ -21,33 +21,56 @@ const SignUpPage = () => {
   const { mutate, isError, isPending, error } = useMutation({
     mutationFn: async ({ email, username, fullName, password }) => {
       try {
-        const res = await fetch("/api/auth/signup", {
+        const apiUrl = process.env.VITE_API_URL || "";
+        const res = await fetch(`${apiUrl}/api/auth/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({ email, username, fullName, password }),
         });
+
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Faild to create account !");
+          throw new Error(data.error || "Failed to create account!");
         }
 
-        console.log(data);
         return data;
       } catch (error) {
-        console.log(error);
+        if (error.message.includes("<!DOCTYPE")) {
+          throw new Error(
+            "Unable to connect to the server. Please try again later."
+          );
+        }
         throw error;
       }
     },
     onSuccess: () => {
       toast.success("Account created successfully");
+      // Clear form data on success
+      setFormData({
+        email: "",
+        username: "",
+        fullName: "",
+        password: "",
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // page won't reload
+    e.preventDefault();
+    if (
+      !formData.email ||
+      !formData.username ||
+      !formData.fullName ||
+      !formData.password
+    ) {
+      toast.error("Please fill in all fields");
+      return;
+    }
     mutate(formData);
   };
 
@@ -69,56 +92,64 @@ const SignUpPage = () => {
             Join today.
           </h1>
           <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
-            <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-transparent">
+            <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-[#16181C] hover:border-[#1D9BF0] focus-within:border-[#1D9BF0] transition-colors">
               <MdOutlineMail className="w-5 h-5 text-gray-400" />
               <input
                 type="email"
-                className="grow bg-transparent text-base outline-none"
+                className="grow bg-transparent text-base outline-none text-white"
                 placeholder="Email"
                 name="email"
                 onChange={handleInputChange}
                 value={formData.email}
+                required
               />
             </label>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-transparent flex-1">
+              <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-[#16181C] hover:border-[#1D9BF0] focus-within:border-[#1D9BF0] transition-colors flex-1">
                 <FaUser className="w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  className="grow bg-transparent text-base outline-none"
+                  className="grow bg-transparent text-base outline-none text-white"
                   placeholder="Username"
                   name="username"
                   onChange={handleInputChange}
                   value={formData.username}
+                  required
                 />
               </label>
-              <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-transparent flex-1">
+              <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-[#16181C] hover:border-[#1D9BF0] focus-within:border-[#1D9BF0] transition-colors flex-1">
                 <MdDriveFileRenameOutline className="w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  className="grow bg-transparent text-base outline-none"
+                  className="grow bg-transparent text-base outline-none text-white"
                   placeholder="Full Name"
                   name="fullName"
                   onChange={handleInputChange}
                   value={formData.fullName}
+                  required
                 />
               </label>
             </div>
 
-            <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-transparent">
+            <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-[#16181C] hover:border-[#1D9BF0] focus-within:border-[#1D9BF0] transition-colors">
               <MdPassword className="w-5 h-5 text-gray-400" />
               <input
                 type="password"
-                className="grow bg-transparent text-base outline-none"
+                className="grow bg-transparent text-base outline-none text-white"
                 placeholder="Password"
                 name="password"
                 onChange={handleInputChange}
                 value={formData.password}
+                required
+                minLength={6}
               />
             </label>
 
-            <button className="btn btn-primary text-white rounded-full h-12 mt-2">
+            <button
+              className="btn btn-primary text-white rounded-full h-12 mt-2 bg-[#1D9BF0] hover:bg-[#1A8CD8] disabled:bg-[#1D9BF0]/50"
+              disabled={isPending}
+            >
               {isPending ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : (
@@ -127,16 +158,18 @@ const SignUpPage = () => {
             </button>
 
             {isError && (
-              <p className="text-red-500 text-sm text-center mt-2">
-                {error.message}
-              </p>
+              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 mt-2">
+                <p className="text-red-500 text-sm text-center">
+                  {error.message}
+                </p>
+              </div>
             )}
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-gray-300 mb-4">Already have an account?</p>
             <Link to="/login" className="w-full">
-              <button className="btn btn-outline btn-primary text-white rounded-full w-full h-12">
+              <button className="btn btn-outline text-[#1D9BF0] hover:bg-[#1D9BF0] hover:text-white rounded-full w-full h-12 border-[#1D9BF0]">
                 Sign in
               </button>
             </Link>
@@ -146,4 +179,5 @@ const SignUpPage = () => {
     </div>
   );
 };
+
 export default SignUpPage;
