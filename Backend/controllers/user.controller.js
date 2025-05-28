@@ -160,3 +160,73 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const getFollowers = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const followers = await User.find({ _id: { $in: user.followers } })
+      .select("-password")
+      .lean();
+
+    res.status(200).json(followers);
+  } catch (error) {
+    console.error("Error in getFollowers:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getFollowing = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const following = await User.find({ _id: { $in: user.following } })
+      .select("-password")
+      .lean();
+
+    res.status(200).json(following);
+  } catch (error) {
+    console.error("Error in getFollowing:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const removeFollower = async (req, res) => {
+  try {
+    const { id } = req.params; // ID of the follower to remove
+    const userToRemove = await User.findById(id);
+    const currentUser = await User.findById(req.user._id);
+
+    if (!userToRemove || !currentUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the user is actually a follower
+    if (!currentUser.followers.includes(id)) {
+      return res.status(400).json({ error: "This user is not following you" });
+    }
+
+    // Remove the follower from current user's followers
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: { followers: id },
+    });
+
+    // Remove current user from the follower's following list
+    await User.findByIdAndUpdate(id, {
+      $pull: { following: req.user._id },
+    });
+
+    res.status(200).json({ message: "Follower removed successfully" });
+  } catch (error) {
+    console.error("Error in removeFollower:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

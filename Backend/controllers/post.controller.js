@@ -79,9 +79,31 @@ export const commentOnPost = async (req, res) => {
     post.comments.push(comment);
     await post.save();
 
+    // Create notification for post owner if the commenter is not the post owner
+    if (post.user.toString() !== userId.toString()) {
+      console.log("Creating comment notification:", {
+        from: userId,
+        to: post.user,
+        type: "comment",
+        postId: postId,
+        text: text,
+      });
+      const notification = new Notification({
+        from: userId,
+        to: post.user,
+        type: "comment",
+        post: postId,
+        text: text,
+      });
+      await notification.save();
+      console.log("Comment notification created successfully");
+    } else {
+      console.log("No notification created - user commented on their own post");
+    }
+
     res.status(200).json(post);
   } catch (error) {
-    console.log(error);
+    console.log("Error in commentOnPost:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -110,23 +132,35 @@ export const likeUnlikePost = async (req, res) => {
       res.status(200).json(updatedLikes);
     } else {
       // like
-
       post.likes.push(userId);
       await User.updateOne({ _id: userId }, { $push: { likedPosts: postId } });
       await post.save();
 
-      const notification = new Notification({
-        from: userId,
-        to: post.user,
-        type: "like",
-      });
-      await notification.save();
-      const updatedLikes = post.likes;
+      // Only create notification if the liker is not the post owner
+      if (post.user.toString() !== userId.toString()) {
+        console.log("Creating like notification:", {
+          from: userId,
+          to: post.user,
+          type: "like",
+          postId: postId,
+        });
+        const notification = new Notification({
+          from: userId,
+          to: post.user,
+          type: "like",
+          post: postId,
+        });
+        await notification.save();
+        console.log("Like notification created successfully");
+      } else {
+        console.log("No notification created - user liked their own post");
+      }
 
+      const updatedLikes = post.likes;
       res.status(200).json(updatedLikes);
     }
   } catch (error) {
-    console.log("error in likeUnlikePost", error);
+    console.log("Error in likeUnlikePost:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -155,15 +189,16 @@ export const getAllPosts = async (req, res) => {
 };
 
 export const getLikesPost = async (req, res) => {
-  const userId = req.params.id;
+  const { username } = req.params;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
+      .sort({ createdAt: -1 })
       .populate({ path: "user", select: "-password" })
       .populate({ path: "comments.user", select: "-password" });
     res.status(200).json(likedPosts);

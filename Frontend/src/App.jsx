@@ -37,33 +37,45 @@ function App() {
       </div>
     );
   }
+
   return (
-    <div className="flex max-w-6xl mx-auto">
-      {/*  common components is not wrabbed with Routes*/}
-      {authUser && <Sidebar />}
-      <Routes>
-        <Route
-          path="/"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/signup"
-          element={!authUser ? <SignupPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/notifications"
-          element={authUser ? <Notification /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/profile/:username"
-          element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
-        />
-      </Routes>
-      {authUser && <RightPanel />}
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-[1265px] mx-auto flex relative">
+        {/* Left Sidebar Space */}
+        <div className="w-[275px] flex-shrink-0">{authUser && <Sidebar />}</div>
+
+        {/* Main Content */}
+        <div className="w-[600px] min-h-screen border-x border-gray-800">
+          <Routes>
+            <Route
+              path="/"
+              element={authUser ? <HomePage /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/login"
+              element={!authUser ? <LoginPage /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/signup"
+              element={!authUser ? <SignupPage /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/notifications"
+              element={authUser ? <Notification /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/profile/:username"
+              element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+            />
+          </Routes>
+        </div>
+
+        {/* Right Panel Space */}
+        <div className="w-[350px] flex-shrink-0">
+          {authUser && <RightPanel />}
+        </div>
+      </div>
+
       <Toaster />
     </div>
   );

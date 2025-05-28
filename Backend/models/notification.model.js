@@ -15,7 +15,20 @@ export const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["follow", "like"],
+      enum: ["follow", "like", "comment", "mention", "reply"],
+    },
+    post: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: function () {
+        return ["like", "comment", "mention", "reply"].includes(this.type);
+      },
+    },
+    text: {
+      type: String,
+      required: function () {
+        return ["comment", "mention", "reply"].includes(this.type);
+      },
     },
     read: {
       type: Boolean,

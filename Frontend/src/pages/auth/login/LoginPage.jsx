@@ -56,49 +56,66 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto flex h-screen">
-      <div className="flex-1 hidden lg:flex items-center  justify-center">
-        <XSvg className="lg:w-2/3 fill-white" />
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center px-4 py-8 lg:py-0">
+      <div className="lg:flex-1 lg:h-screen hidden lg:flex items-center justify-center bg-black">
+        <XSvg className="w-2/3 max-w-md fill-white" />
       </div>
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <form className="flex gap-4 flex-col" onSubmit={handleSubmit}>
-          <XSvg className="w-24 lg:hidden fill-white" />
-          <h1 className="text-4xl font-extrabold text-white">{"Let's"} go.</h1>
-          <label className="input input-bordered rounded flex items-center gap-2">
-            <MdOutlineMail />
-            <input
-              type="text"
-              className="grow"
-              placeholder="username"
-              name="username"
-              onChange={handleInputChange}
-              value={formData.username}
-            />
-          </label>
+      <div className="w-full lg:flex-1 flex flex-col justify-center items-center lg:h-screen lg:max-w-xl">
+        <div className="w-full max-w-sm mx-auto">
+          <div className="flex justify-center lg:hidden mb-8">
+            <XSvg className="w-16 sm:w-20 fill-white" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white text-center lg:text-left mb-8">
+            {"Let's"} go.
+          </h1>
+          <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
+            <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-transparent">
+              <MdOutlineMail className="w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                className="grow bg-transparent text-base outline-none"
+                placeholder="Username"
+                name="username"
+                onChange={handleInputChange}
+                value={formData.username}
+              />
+            </label>
 
-          <label className="input input-bordered rounded flex items-center gap-2">
-            <MdPassword />
-            <input
-              type="password"
-              className="grow"
-              placeholder="Password"
-              name="password"
-              onChange={handleInputChange}
-              value={formData.password}
-            />
-          </label>
-          <button className="btn rounded-full btn-primary text-white">
-            {isPending ? "Loading..." : "Login"}
-          </button>
-          {isError && <p className="text-red-500">{error.message}</p>}
-        </form>
-        <div className="flex flex-col gap-2 mt-4">
-          <p className="text-white text-lg">{"Don't"} have an account?</p>
-          <Link to="/signup">
-            <button className="btn rounded-full btn-primary text-white btn-outline w-full">
-              Sign up
+            <label className="input input-bordered flex items-center gap-3 px-4 h-12 bg-transparent">
+              <MdPassword className="w-5 h-5 text-gray-400" />
+              <input
+                type="password"
+                className="grow bg-transparent text-base outline-none"
+                placeholder="Password"
+                name="password"
+                onChange={handleInputChange}
+                value={formData.password}
+              />
+            </label>
+
+            <button className="btn btn-primary text-white rounded-full h-12 mt-2">
+              {isPending ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Login"
+              )}
             </button>
-          </Link>
+
+            {isError && (
+              <p className="text-red-500 text-sm text-center mt-2">
+                {error.message}
+              </p>
+            )}
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-gray-300 mb-4">{"Don't"} have an account?</p>
+            <Link to="/signup" className="w-full">
+              <button className="btn btn-outline btn-primary text-white rounded-full w-full h-12">
+                Sign up
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

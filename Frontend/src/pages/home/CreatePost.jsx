@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { FaTimes, FaImage } from "react-icons/fa";
 
 const CreatePost = () => {
   const [text, setText] = useState("");
@@ -66,56 +67,82 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="flex p-4 items-start gap-4 border-b border-gray-700">
-      <div className="avatar">
-        <div className="w-8 rounded-full">
-          <img src={authUser.profileImg || "/avatar-placeholder.png"} />
+    <div className="border-b border-gray-800 p-4">
+      <div className="flex gap-3">
+        {/* User Avatar */}
+        <div className="shrink-0">
+          <div className="w-10 h-10 rounded-full overflow-hidden">
+            <img
+              src={authUser?.profileImg || "/avatar-placeholder.png"}
+              alt="profile"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Post Input Area */}
+        <div className="flex-1">
+          <textarea
+            className="w-full bg-transparent border-none outline-none text-[15px] min-h-[50px] resize-none placeholder:text-gray-600"
+            placeholder="What's happening?"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={Math.min(5, Math.max(2, text.split("\n").length))}
+          />
+
+          {/* Image Preview */}
+          {img && (
+            <div className="relative mt-2 mb-4">
+              <img
+                src={img}
+                alt="Selected"
+                className="rounded-2xl max-h-[300px] w-auto border border-gray-800"
+              />
+              <button
+                onClick={() => {
+                  setImg(null);
+                  imgRef.current.value = null;
+                }}
+                className="absolute top-2 right-2 bg-black/50 rounded-full p-1 hover:bg-black/75"
+              >
+                <IoCloseSharp className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Action Bar */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex gap-2 text-primary">
+              <label className="cursor-pointer hover:bg-primary/10 rounded-full p-2">
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleImgChange}
+                  accept="image/*"
+                  ref={imgRef}
+                />
+                <CiImageOn className="w-5 h-5" />
+              </label>
+            </div>
+
+            <button
+              className={`px-4 py-1.5 rounded-full font-semibold ${
+                !text && !img
+                  ? "bg-primary/50 text-white/50 cursor-not-allowed"
+                  : "bg-primary text-white hover:bg-primary/90"
+              }`}
+              disabled={(!text && !img) || isPending}
+              onClick={handleSubmit}
+            >
+              {isPending ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Post"
+              )}
+            </button>
+          </div>
         </div>
       </div>
-      <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
-        <textarea
-          className="textarea w-full p-0 text-lg resize-none border-none focus:outline-none  border-gray-800"
-          placeholder="What is happening?!"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        {img && (
-          <div className="relative w-72 mx-auto">
-            <IoCloseSharp
-              className="absolute top-0 right-0 text-white bg-gray-800 rounded-full w-5 h-5 cursor-pointer"
-              onClick={() => {
-                setImg(null);
-                imgRef.current.value = null;
-              }}
-            />
-            <img
-              src={img}
-              className="w-full mx-auto h-72 object-contain rounded"
-            />
-          </div>
-        )}
-
-        <div className="flex justify-between border-t py-2 border-t-gray-700">
-          <div className="flex gap-1 items-center">
-            <CiImageOn
-              className="fill-primary w-6 h-6 cursor-pointer"
-              onClick={() => imgRef.current.click()}
-            />
-            <BsEmojiSmileFill className="fill-primary w-5 h-5 cursor-pointer" />
-          </div>
-          <input
-            accept="image/*"
-            type="file"
-            hidden
-            ref={imgRef}
-            onChange={handleImgChange}
-          />
-          <button className="btn btn-primary rounded-full btn-sm text-white px-4">
-            {isPending ? "Posting..." : "Post"}
-          </button>
-        </div>
-        {isError && <div className="text-red-500">{error.message}</div>}
-      </form>
     </div>
   );
 };
