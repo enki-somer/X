@@ -1,12 +1,13 @@
 [build]
   base = "Frontend"
-  command = "npm install -g npm@latest && npm ci && npm run build"
+  command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
   NODE_ENV = "production"
-  NPM_FLAGS = "--no-audit --no-fund --legacy-peer-deps"
+  VITE_CJS_IGNORE_WARNING = "true"
+  VITE_CJS_TRACE = "true"
 
 [[redirects]]
   from = "/*"

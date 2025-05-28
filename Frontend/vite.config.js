@@ -28,6 +28,15 @@ export default defineConfig({
     sourcemap: false,
     minify: "terser",
     cssMinify: true,
+    modulePreload: {
+      polyfill: true,
+    },
+    commonjsOptions: {
+      include: [/node_modules/],
+      extensions: [".js", ".cjs", ".mjs"],
+      strictRequires: true,
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -45,6 +54,13 @@ export default defineConfig({
   css: {
     postcss: {
       plugins: [postcssImport, postcssNesting, tailwindcss, autoprefixer],
+    },
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom", "react-router-dom"],
+    exclude: [],
+    esbuildOptions: {
+      target: "es2020",
     },
   },
 });
