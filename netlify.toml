@@ -1,6 +1,6 @@
 [build]
   base = "Frontend"
-  command = "pwd && ls -la && npm --version && node --version && npm ci --verbose && npm run build"
+  command = "npm install -g npm@latest && npm ci && npm run build"
   publish = "dist"
 
 [build.environment]
