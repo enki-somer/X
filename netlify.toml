@@ -4,9 +4,9 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "16"
+  NODE_VERSION = "18"
   NODE_ENV = "production"
-  NPM_FLAGS = "--no-audit --no-fund"
+  NPM_FLAGS = "--no-audit --no-fund --legacy-peer-deps"
 
 [[redirects]]
   from = "/*"
